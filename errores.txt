@@ -1,0 +1,3 @@
+Error de formato de edad en la línea: Duvan, -23 : duvan@gmail.com - 222222:22
+Error de formato de correo en la línea: Juan, 23 : djdjss -2222:233
+
