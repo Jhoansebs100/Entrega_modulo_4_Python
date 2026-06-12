@@ -1,7 +1,0 @@
-Nombre, Edad : Correo - Fecha y Hora
-jhoan, 22 : jh@gmail.com - 2026-06-11 21:24:34
-david, 34 : dav23@gmail.com - 2026-06-11 21:25:06
-carlos, 54 : carlito23@gmail.com - 2026-06-11 21:25:28
-Duvan, -23 : duvan@gmail.com - 222222:22
-Juan, 23 : djdjss - 2222:233
-

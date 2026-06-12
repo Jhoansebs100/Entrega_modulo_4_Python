@@ -1,0 +1,2 @@
+Error de formato de edad en la línea: Maria, -52,correo2@gmail.com,2026-06-12 16:31:21
+Error de formato de nombre (no hay nombre) en la línea: ,23,correo4@gmail.com,2026-06-12 16:31:38

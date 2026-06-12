@@ -1,5 +1,5 @@
 import datetime
-ARCHIVO = 'usuarios.txt'
+ARCHIVO = 'usuarios_test.txt'
 
 def registrar_usuario(): # guarda directamente en el archivo txt
     nombre = input("Ingrese el nombre del usuario: ").strip().lower()
@@ -28,10 +28,10 @@ def registrar_usuario(): # guarda directamente en el archivo txt
         print(f"Ocurrió un error inesperado: {error}")
 
     with open(ARCHIVO, mode='a', encoding='utf-8') as file:
-        #encabezado del archivo: Nombre, Edad : Correo - Fecha y Hora
+        #encabezado del archivo: Nombre, Edad , Correo , Fecha y Hora
         if file.tell() == 0:  # Si el archivo está vacío, escribir el encabezado
-            file.write("Nombre, Edad : Correo - Fecha y Hora\n")
-        file.write(f"{nombre}, {edad} : {correo} - {fecha_hora}\n")
+            file.write("Nombre, Edad , Correo , Fecha y Hora\n")
+        file.write(f"{nombre}, {edad} , {correo} , {fecha_hora}\n")
         print(f"Usuario {nombre} registrado exitosamente.")
 
 
@@ -39,7 +39,7 @@ def mostrar_usuarios():
     try:
         with open(ARCHIVO, mode='r', encoding='utf-8') as file:
             for line in file:
-                if line.strip() and not line.startswith("Nombre, Edad : Correo - Fecha y Hora"):
+                if line.strip() and not line.startswith("Nombre, Edad , Correo , Fecha y Hora"):
                     print(line.strip())
         
     except FileNotFoundError:
@@ -52,7 +52,7 @@ def buscar_usuario(nombre):
     try:
         with open(ARCHIVO, mode='r') as file:
             for line in file:
-                if line.strip() and not line.startswith("Nombre, Edad : Correo - Fecha y Hora"):
+                if line.strip() and not line.startswith("Nombre, Edad , Correo , Fecha y Hora"):
                     if nombre in line.split(',')[0].strip().lower():
                         return line.strip()
         return None
@@ -70,28 +70,41 @@ def buscar_usuario(nombre):
 def crear_archivo_errores(): # Esta funcioncita lo que hace es: Lee el txt y luego va catalogando los errores encontrados, por ejemplo, si encuentra una línea que no tiene el formato correcto, lo registra en el archivo de errores y si esta bien crea un archivo de registros buenos.
     try:
         with open(ARCHIVO, mode='r', encoding='utf-8') as file:
-            for line in file:
-                if not line.strip() or line.startswith("Nombre, Edad : Correo - Fecha y Hora"):
-                    continue  # Saltar líneas vacías y de inicio
-                partes = line.split(',')
-                if len(partes) < 2:
-                    with open('errores.txt', mode='a', encoding='utf-8') as error_file:
+            with open('usuarios_errores.txt', mode='a', encoding='utf-8') as error_file, \
+                 open('usuarios_limpios.txt', mode='a', encoding='utf-8') as limpio_file:
+                for line in file:
+                    if not line.strip() or line.startswith("Nombre, Edad , Correo , Fecha y Hora"):
+                        continue  
+                    partes = line.split(',')
+                    if len(partes) < 2:
                         error_file.write(f"Error de formato en la línea: {line.strip()}\n")
-                    continue
-                nombre = partes[0].strip()
-                edad_partes = partes[1].split(':')
-                if len(edad_partes) < 2 or not edad_partes[0].strip().isdigit():
-                    with open('errores.txt', mode='a', encoding='utf-8') as error_file:
+                        continue
+                    nombre = partes[0].strip()
+                    if nombre == "":
+                        error_file.write(f"Error de formato de nombre (no hay nombre) en la línea: {line.strip()}\n")
+                        continue
+                    edad_partes = partes[1].strip() 
+                    if len(edad_partes) < 2:
                         error_file.write(f"Error de formato de edad en la línea: {line.strip()}\n")
-                    continue
-                correo_partes = edad_partes[1].split('-')
-                if len(correo_partes) < 2 or '@' not in correo_partes[0].strip():
-                    with open('errores.txt', mode='a', encoding='utf-8') as error_file:
+                        continue
+                    if not edad_partes.isdigit():
+                        error_file.write(f"Error de formato de edad en la línea: {line.strip()}\n")
+                        continue
+                    if int(edad_partes) < 0:
+                        error_file.write(f"Error de formato de edad (negativa) en la línea: {line.strip()}\n")
+                        continue
+                    correo_partes = partes[2].strip()
+                    if '@' not in correo_partes:
                         error_file.write(f"Error de formato de correo en la línea: {line.strip()}\n")
-                    continue 
-                if len(correo_partes) >= 2 and '@' in correo_partes[0].strip() and len(edad_partes) >= 2 and edad_partes[0].strip().isdigit():
-                    with open('registros_buenos.txt', mode='a', encoding='utf-8') as bueno:
-                        bueno.write(line)
+                        continue
+                    fecha_hora_partes = partes[3].strip()
+                    try:
+                        datetime.datetime.strptime(fecha_hora_partes, "%Y-%m-%d %H:%M:%S")
+                    except ValueError:
+                        error_file.write(f"Error de formato de fecha y hora en la línea: {line.strip()}\n")
+                        continue
+                    limpio_file.write(line)
+
     except FileNotFoundError:
         print("No se encontró el archivo usuarios.txt. Por favor, registre usuarios primero.")
     except Exception as error:
@@ -102,21 +115,33 @@ def validaciones():
     try:
         with open(ARCHIVO, mode='r', encoding='utf-8') as file:
             for line in file:
-                if not line.strip() or line.startswith("Nombre, Edad : Correo - Fecha y Hora"):
+                if not line.strip() or line.startswith("Nombre, Edad , Correo , Fecha y Hora"):
                     continue  
                 partes = line.split(',')
                 if len(partes) < 2:
                     print(f"Error de formato en la línea: {line.strip()}")
                     continue
                 nombre = partes[0].strip()
-                edad_partes = partes[1].split(':')
-                if len(edad_partes) < 2 or not edad_partes[0].strip().isdigit():
+                if nombre == "":
+                    print(f"Error de formato de nombre (no hay nombre) en la línea: {line.strip()}")
+                    continue
+                edad_partes = partes[1].strip()
+                if int(edad_partes) < 0:
+                    print(f"Error de formato de edad (negativa) en la línea: {line.strip()}")
+                    continue
+                if not edad_partes.isdigit():
                     print(f"Error de formato de edad en la línea: {line.strip()}")
                     continue
-                correo_partes = edad_partes[1].split('-')
-                if len(correo_partes) < 2 or '@' not in correo_partes[0].strip():
+                correo_partes = partes[2].strip()
+                if '@' not in correo_partes:
                     print(f"Error de formato de correo en la línea: {line.strip()}")
-
+                    continue
+                fecha_hora_partes = partes[3].strip()
+                try:
+                    datetime.datetime.strptime(fecha_hora_partes, "%Y-%m-%d %H:%M:%S")
+                except ValueError:
+                    print(f"Error de formato de fecha y hora en la línea: {line.strip()}")
+                    
             print("--------------Validación completada--------------")
             
     except FileNotFoundError:
