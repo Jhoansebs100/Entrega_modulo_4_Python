@@ -4,15 +4,15 @@ ARCHIVO = 'usuarios_test.txt'
 def registrar_usuario(): # guarda directamente en el archivo txt
     nombre = input("Ingrese el nombre del usuario: ").strip().lower()
     edad = input("Ingrese la edad del usuario: ").strip().lower()
+    if not edad.isdigit() or int(edad) <= 0 or int(edad) > 120:
+        print("La edad debe ser un número positivo entre 1 y 120. Por favor, intente de nuevo.")
+        return
+    
     correo = input("Ingrese el correo electrónico del usuario: ").strip().lower()
     fecha_hora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     if not nombre or not edad or not correo:
         print("Todos los campos son obligatorios. Por favor, intente de nuevo.")
-        return
-
-    if not edad.isdigit() or int(edad) <= 0 or int(edad) > 120:
-        print("La edad debe ser un número positivo entre 1 y 120. Por favor, intente de nuevo.")
         return
 
     try:
@@ -33,6 +33,25 @@ def registrar_usuario(): # guarda directamente en el archivo txt
             file.write("Nombre, Edad , Correo , Fecha y Hora\n")
         file.write(f"{nombre}, {edad} , {correo} , {fecha_hora}\n")
         print(f"Usuario {nombre} registrado exitosamente.")
+
+def eliminar_usuario(usuario):
+    try:
+        with open(ARCHIVO, mode='r', encoding='utf-8') as file:
+            lines = file.readlines()
+        
+        with open(ARCHIVO, mode='w', encoding='utf-8') as file:
+            for line in lines:
+                if usuario not in line.split(',')[0].strip().lower():
+                    file.write(line)
+                else:
+                    print(f"Usuario {usuario} eliminado exitosamente.")
+                    return
+            print(f"Usuario {usuario} no encontrado.")
+    except FileNotFoundError:
+        print("No se encontró el archivo usuarios.txt. Por favor, registre usuarios primero.")
+    except Exception as error:
+        print(f"Ocurrió un error inesperado: {error}")
+
 
 
 def mostrar_usuarios(): 
@@ -127,7 +146,7 @@ def validaciones():
                     continue
                 edad_partes = partes[1].strip()
                 if int(edad_partes) < 0:
-                    print(f"Error de formato de edad (negativa) en la línea: {line.strip()}")
+                    print(f"Error de formato de edad (es negativa) en la línea: {line.strip()}")
                     continue
                 if not edad_partes.isdigit():
                     print(f"Error de formato de edad en la línea: {line.strip()}")
@@ -154,19 +173,21 @@ def menu(opcion):
     if opcion == '1':
         registrar_usuario()
     elif opcion == '2':
-        mostrar_usuarios()
+        eliminar_usuario()
     elif opcion == '3':
+        mostrar_usuarios()
+    elif opcion == '4':
         nombre = input("Ingrese el nombre del usuario a buscar: ").strip().lower()
         resultado = buscar_usuario(nombre)
         if resultado:
             print(f"Usuario encontrado: {resultado}")
         else:
             print("Usuario no encontrado.")
-    elif opcion == '4':
-        crear_archivo_errores()
     elif opcion == '5':
-        validaciones()
+        crear_archivo_errores()
     elif opcion == '6':
+        validaciones()
+    elif opcion == '7':
         print("Saliendo del programa.")
         exit()
     else:
@@ -177,12 +198,14 @@ def menu(opcion):
 
 def main():
     while True:
+        print("\n------------------Sistema de registro de usuarios------------------")
         print("\n1. Registrar usuario")
-        print("2. Mostrar usuarios")
-        print("3. Buscar usuario")
-        print("4. Crear archivos de errores y limpio")
-        print("5. Validaciones")
-        print("6. Salir")
+        print("2. Eliminar usuario")
+        print("3. Mostrar usuarios")
+        print("4. Buscar usuario")
+        print("5. Crear archivos de errores y limpio")
+        print("6. Validar archivo de usuarios")
+        print("7. Salir")
         opcion = input("Seleccione una opción: ")
 
         menu(opcion)
