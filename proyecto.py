@@ -11,8 +11,8 @@ def registrar_usuario(): # guarda directamente en el archivo txt
         print("Todos los campos son obligatorios. Por favor, intente de nuevo.")
         return
 
-    if not edad.isdigit() or int(edad) <= 0:
-        print("La edad debe ser un número positivo. Por favor, intente de nuevo.")
+    if not edad.isdigit() or int(edad) <= 0 or int(edad) > 120:
+        print("La edad debe ser un número positivo entre 1 y 120. Por favor, intente de nuevo.")
         return
 
     try:
