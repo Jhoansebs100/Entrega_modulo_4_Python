@@ -3,17 +3,23 @@ ARCHIVO = 'usuarios_test.txt'
 
 def registrar_usuario(): # guarda directamente en el archivo txt
     nombre = input("Ingrese el nombre del usuario: ").strip().lower()
+    if not nombre or not edad or not correo:
+        print("Todos los campos son obligatorios. Por favor, intente de nuevo.")
+        return
     edad = input("Ingrese la edad del usuario: ").strip().lower()
     if not edad.isdigit() or int(edad) <= 0 or int(edad) > 120:
         print("La edad debe ser un número positivo entre 1 y 120. Por favor, intente de nuevo.")
         return
-    
-    correo = input("Ingrese el correo electrónico del usuario: ").strip().lower()
-    fecha_hora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     if not nombre or not edad or not correo:
         print("Todos los campos son obligatorios. Por favor, intente de nuevo.")
         return
+    
+    correo = input("Ingrese el correo electrónico del usuario: ").strip().lower()
+    if not nombre or not edad or not correo:
+        print("Todos los campos son obligatorios. Por favor, intente de nuevo.")
+        return
+    fecha_hora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 
     try:
         with open(ARCHIVO, mode='r', encoding= 'utf-8') as file:
